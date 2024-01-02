@@ -22,10 +22,22 @@ class MyStates(StatesGroup):
     is_logged_in = State()
 
 
+
 @bot.message_handler(commands=['help', 'start'])
 async def send_welcome(message):
     await bot.reply_to(message, "Hi there")
 
+@bot.message_handler(state=MyStates.is_logged_in, commands=['menu'])
+async def logged_menu(message):
+    markup = types.ReplyKeyboardMarkup()
+    item1 = types.KeyboardButton('view rates')
+    item2 = types.KeyboardButton('Calculator')
+    item3 = types.KeyboardButton('Log out')
+    markup.row(item1)
+    markup.row(item2)
+    markup.row(item3)
+    # await bot.set_state(message.from_user.id, MyStates.num, message.chat.id)
+    await bot.send_message(message.chat.id, 'YEAH', reply_markup=markup)
 
 @bot.message_handler(commands=['lol'])
 async def send_lol(message):
@@ -63,7 +75,7 @@ async def num(message):
     if len(check_user) > 1:
         await bot.send_message(message.chat.id, 'Something went wrong', reply_markup=remove_markup)
     elif len(check_user) == 1 and check_user[0][-1] == 0:
-        await bot.send_message(message.chat.id, 'You are logged in', reply_markup=remove_markup)
+        await bot.send_message(message.chat.id, 'You are logged in \nSend \menu to open menu', reply_markup=remove_markup)
         await bot.set_state(message.from_user.id, MyStates.is_logged_in, message.chat.id)
     elif len(check_user) == 1 and check_user[0][-1] == 1:
         await bot.send_message(message.chat.id, 'Your account has been deleted by the admin', reply_markup=remove_markup)
@@ -72,6 +84,8 @@ async def num(message):
         await bot.set_state(message.from_user.id, MyStates.is_logged_in, message.chat.id)
         await bot.send_message(message.chat.id, 'You have successfully registered', reply_markup=remove_markup)
     # select_all()
+
+
 
 create_db()
 bot.add_custom_filter(asyncio_filters.StateFilter(bot))

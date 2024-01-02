@@ -1,6 +1,5 @@
 import aiohttp
 import json
-import schemas
 import pydantic
 
 async def get_crypto_rates(cur_list=['bitcoin', 'ethereum', 'binancecoin']):
